@@ -1,0 +1,73 @@
+# 分布式缓存系统Docker Compose配置
+# 定义三节点缓存集群的容器编排
+services:
+  # 缓存服务器节点1
+  server1:
+    build: .                          # 使用当前目录的Dockerfile构建镜像
+    container_name: cache_server1     # 容器名称
+    hostname: server1                 # 容器主机名，用于节点间通信
+    environment:
+      - NODE_ID=server1               # 节点标识符环境变量
+    ports:
+      - "9527:9527"                   # HTTP API端口映射
+      - "50051:50051"                 # gRPC通信端口映射
+    networks:
+      - cache_network                 # 连接到缓存网络
+    restart: unless-stopped           # 容器重启策略：除非手动停止否则自动重启
+    healthcheck:                      # 健康检查配置
+      test: ["CMD", "curl", "-f", "http://localhost:9527/health"]  # 健康检查命令
+      interval: 30s                   # 检查间隔30秒
+      timeout: 10s                    # 检查超时10秒
+      retries: 3                      # 失败重试3次
+
+  # 缓存服务器节点2
+  server2:
+    build: .                          # 使用当前目录的Dockerfile构建镜像
+    container_name: cache_server2     # 容器名称
+    hostname: server2                 # 容器主机名，用于节点间通信
+    environment:
+      - NODE_ID=server2               # 节点标识符环境变量
+    ports:
+      - "9528:9528"                   # HTTP API端口映射
+      - "50052:50052"                 # gRPC通信端口映射
+    networks:
+      - cache_network                 # 连接到缓存网络
+    restart: unless-stopped           # 容器重启策略：除非手动停止否则自动重启
+    healthcheck:                      # 健康检查配置
+      test: ["CMD", "curl", "-f", "http://localhost:9528/health"]  # 健康检查命令
+      interval: 30s                   # 检查间隔30秒
+      timeout: 10s                    # 检查超时10秒
+      retries: 3                      # 失败重试3次
+    depends_on:
+      - server1                       # 依赖server1先启动
+
+  # 缓存服务器节点3
+  server3:
+    build: .                          # 使用当前目录的Dockerfile构建镜像
+    container_name: cache_server3     # 容器名称
+    hostname: server3                 # 容器主机名，用于节点间通信
+    environment:
+      - NODE_ID=server3               # 节点标识符环境变量
+    ports:
+      - "9529:9529"                   # HTTP API端口映射
+      - "50053:50053"                 # gRPC通信端口映射
+    networks:
+      - cache_network                 # 连接到缓存网络
+    restart: unless-stopped           # 容器重启策略：除非手动停止否则自动重启
+    healthcheck:                      # 健康检查配置
+      test: ["CMD", "curl", "-f", "http://localhost:9529/health"]  # 健康检查命令
+      interval: 30s                   # 检查间隔30秒
+      timeout: 10s                    # 检查超时10秒
+      retries: 3                      # 失败重试3次
+    depends_on:                       # 启动依赖：确保其他节点先启动
+      - server1
+      - server2
+
+# 网络配置
+# 创建专用的桥接网络供缓存集群使用
+networks:
+  cache_network:
+    driver: bridge                    # 使用桥接网络驱动
+    ipam:                            # IP地址管理配置
+      config:
+        - subnet: 172.20.0.0/16      # 子网地址范围
