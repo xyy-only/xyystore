@@ -1,0 +1,13 @@
+syntax = "proto3";
+package monitor.proto;
+
+message DiskInfo {
+    string name = 1;
+    float read_bytes_per_sec = 2;
+    float write_bytes_per_sec = 3;
+    float read_iops = 4;
+    float write_iops = 5;
+    float avg_read_latency_ms = 6;
+    float avg_write_latency_ms = 7;
+    float util_percent = 8;
+  }
