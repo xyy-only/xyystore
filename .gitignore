@@ -1,0 +1,36 @@
+# Build outputs
+build/
+bin/
+lib/
+*.o
+*.so
+*.a
+*.exe
+
+# Generated binaries
+signal_changed.bin
+client/test_client
+server/signal_changed.bin
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Local RAG/vector indexes
+AI-assisted analysis/network_knowledge_vectorstore_local/
+
+# Logs and runtime output
+logs/*
+!logs/config/
+!logs/config/glog.conf
+*.log
+
+# Environment and editor files
+.env
+.env.*
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
