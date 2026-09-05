@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package cache;
+
+// 分布式缓存服务定义
+// 提供缓存的基本操作：获取、设置、删除和健康检查
+service CacheService {
+    // 获取缓存值：根据键获取对应的值
+    rpc Get(GetRequest) returns (GetResponse);
+    // 设置缓存值：存储键值对到缓存中
+    rpc Set(SetRequest) returns (SetResponse);
+    // 删除缓存项：根据键删除对应的缓存项
+    rpc Delete(DeleteRequest) returns (DeleteResponse);
+    // 健康检查：检查节点是否正常运行
+    rpc Health(HealthRequest) returns (HealthResponse);
+}
+
+// 获取请求消息
+// 包含要查询的缓存键
+message GetRequest {
+    string key = 1;  // 要获取的缓存键
+}
+
+// 获取响应消息
+// 包含查询结果和对应的值
+message GetResponse {
+    bool found = 1;   // 是否找到对应的缓存项
+    string value = 2; // 缓存值（仅在found为true时有效）
+}
+
+// 设置请求消息
+// 包含要存储的键值对
+message SetRequest {
+    string key = 1;   // 缓存键
+    string value = 2; // 缓存值
+}
+
+// 设置响应消息
+// 包含操作是否成功的标识
+message SetResponse {
+    bool success = 1; // 设置操作是否成功
+}
+
+// 删除请求消息
+// 包含要删除的缓存键
+message DeleteRequest {
+    string key = 1;   // 要删除的缓存键
+}
+
+// 删除响应消息
+// 包含删除操作是否成功的标识
+message DeleteResponse {
+    bool success = 1; // 删除操作是否成功
+}
+
+// 健康检查请求消息
+// 空消息，不需要任何参数
+message HealthRequest {
+}
+
+// 健康检查响应消息
+// 包含节点的健康状态和标识信息
+message HealthResponse {
+    bool healthy = 1;   // 节点是否健康
+    string node_id = 2; // 节点唯一标识符
+}
